@@ -1,4 +1,3 @@
-// src/pages/ResepPage.jsx
 import { useState, useEffect } from 'react';
 import { ResepMakanan } from '../data/makanan';
 import { ResepMinuman } from '../data/minuman';
@@ -8,33 +7,26 @@ export default function ResepPage({ onSelectRecipe }) {
   const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 3; // maksimal 3 resep per halaman
 
-  // 🔹 Gabungkan semua resep dengan penanda jenisnya
+  // 🔹 Gabungkan semua resep (makanan + minuman)
   const allRecipes = [
     ...Object.values(ResepMakanan.resep).map((r) => ({ ...r, type: 'makanan' })),
     ...Object.values(ResepMinuman.resep).map((r) => ({ ...r, type: 'minuman' })),
   ];
 
-  // 🔹 Filter ketat berdasarkan pencarian
+  // 🔹 Filter berdasarkan kata kunci
   useEffect(() => {
     const query = search.trim().toLowerCase();
+    const filtered = query
+      ? allRecipes.filter((r) => r.name.toLowerCase().includes(query))
+      : allRecipes;
 
-    if (query.length === 0) {
-      // Jika search kosong → tampilkan semua resep
-      setFilteredData(allRecipes);
-    } else {
-      // Jika search diisi → tampilkan hanya yang cocok
-      const filtered = allRecipes.filter((r) =>
-        r.name.toLowerCase().includes(query)
-      );
-      setFilteredData(filtered);
-    }
-
-    setCurrentPage(1); // reset pagination ke halaman 1 saat search berubah
+    setFilteredData(filtered);
+    setCurrentPage(1);
   }, [search]);
 
-  // 🔹 Pagination
+  // 🔹 Pagination logic (max 3 per halaman)
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentRecipes = filteredData.slice(startIndex, startIndex + itemsPerPage);
@@ -53,32 +45,46 @@ export default function ResepPage({ onSelectRecipe }) {
           />
         </div>
 
-        {/* 🧩 Hasil Filter */}
+        {/* 🧩 Grid Resep */}
         <RecipeGrid
           recipes={currentRecipes}
           onSelectRecipe={(id, type) => onSelectRecipe(id, type)}
         />
 
-        {/* 📄 Pagination */}
+        {/* 🔢 Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center mt-10 space-x-2">
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  currentPage === i + 1
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
+          <div className="flex justify-center items-center gap-4 mt-10">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                currentPage === 1
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-blue-500 text-white hover:bg-blue-600'
+              }`}
+            >
+              Sebelumnya
+            </button>
+
+            <span className="text-gray-700 font-medium">
+              Halaman {currentPage} dari {totalPages}
+            </span>
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                currentPage === totalPages
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-blue-500 text-white hover:bg-blue-600'
+              }`}
+            >
+              Berikutnya
+            </button>
           </div>
         )}
 
-        {/* 🚫 Tidak ada hasil */}
+        {/* 🚫 Pesan jika hasil kosong */}
         {filteredData.length === 0 && (
           <div className="text-center py-16">
             <p className="text-slate-500">
