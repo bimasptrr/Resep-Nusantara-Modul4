@@ -1,4 +1,4 @@
-// src/components/DesktopNavbar.jsx
+// src/components/navbar/DesktopNavbar.jsx
 import logoUrl from '../../assets/LOGORN.png';
 
 export default function DesktopNavbar({ currentPage, onNavigate }) {
@@ -6,6 +6,8 @@ export default function DesktopNavbar({ currentPage, onNavigate }) {
     { id: 'home', label: 'Beranda' },
     { id: 'makanan', label: 'Makanan' },
     { id: 'minuman', label: 'Minuman' },
+    { id: 'resep', label: 'Semua Resep' },   // 🔹 Tambahan: gabungan makanan & minuman
+    { id: 'favorite', label: 'Favorit' },    // 🔹 Tambahan: halaman resep favorit
     { id: 'profile', label: 'Profile' }
   ];
 
@@ -24,7 +26,10 @@ export default function DesktopNavbar({ currentPage, onNavigate }) {
               />
               {/* Decorative particles */}
               <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping opacity-60" />
-              <div className="absolute -bottom-0.5 -left-0.5 w-1 h-1 bg-blue-300 rounded-full animate-ping opacity-50" style={{ animationDelay: '300ms' }} />
+              <div
+                className="absolute -bottom-0.5 -left-0.5 w-1 h-1 bg-blue-300 rounded-full animate-ping opacity-50"
+                style={{ animationDelay: '300ms' }}
+              />
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent">
@@ -37,7 +42,7 @@ export default function DesktopNavbar({ currentPage, onNavigate }) {
           </div>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-10">
+          <div className="flex items-center space-x-8">
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -52,7 +57,6 @@ export default function DesktopNavbar({ currentPage, onNavigate }) {
               </button>
             ))}
           </div>
-         
         </div>
       </div>
     </nav>
